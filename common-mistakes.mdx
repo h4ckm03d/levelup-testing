@@ -1,0 +1,92 @@
+import { Appear } from 'mdx-deck'
+
+# Common Mistakes
+
+---
+
+# Use real dependency
+
+<ul>
+  <Appear>
+    <li>
+      Using real database
+    </li>
+    <li>Slow unit test</li>
+  </Appear>
+</ul>
+
+---
+
+## Write unit test 
+## after everything done
+
+<ul>
+  <Appear>
+    <li>Big codebase</li>
+    <li>Difficult to refactor</li>
+    <li>Found unexpected bug</li>
+  </Appear>
+</ul>
+
+---
+
+## Use `reflect.DeepEqual` 
+## instead of `cmp.Diff`
+
+<ul>
+  <Appear>
+    <li>Only tell equality</li>
+    <li>Cannot spot the difference between 2 types</li>
+    <li><a href="https://play.golang.org/p/ZVCGyrO5gsC">Prove it!</a></li>
+  </Appear>
+</ul>
+
+---
+
+import {
+  CodeSurferLayout,
+  CodeSurferColumnLayout,
+  Code,
+  Step,
+} from "code-surfer";
+
+<CodeSurferLayout>
+  <Code
+    lang="go"
+    focus="1:15"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    title="Diff vs Equal"
+    subtitle="Prove it!"
+  />
+  <Code
+    focus="10:26"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    subtitle="Compare struct"
+  />
+  <Code
+    focus="28:35"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    subtitle="Compare struct output"
+  />
+  <Code
+    focus="38:48"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    subtitle="Compare string"
+  />
+  <Code
+    focus="50:57"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    subtitle="Compare string output"
+  />
+    <Code
+    focus="60:72"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    subtitle="Compare array"
+  />
+  <Code
+    focus="74:81"
+    code={require("!!raw-loader!./compare.go.sample").default}
+    subtitle="Compare array output"
+  />
+</CodeSurferLayout>
+/>

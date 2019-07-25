@@ -1,0 +1,83 @@
+package main
+
+import (
+	"fmt"
+	"reflect"
+
+	"github.com/google/go-cmp/cmp"
+)
+
+type User struct {
+	ID   int64
+	Name string
+}
+
+func main() {
+	fmt.Println("======== compare struct ==========")
+	a, b := User{1, "lutfi"}, User{1, "Lutfi"}
+	if eq := reflect.DeepEqual(a, b); !eq {
+		fmt.Println(eq, a, b)
+	}
+
+	fmt.Println("==========")
+
+	if diff := cmp.Diff(a, b); diff != "" {
+		fmt.Println("diff a- b+", diff)
+	}
+
+	// ======== compare struct ==========
+	// output: {1 lutfi} vs {1 Lutfi}
+	// ==========
+	// diff a- b+   main.User{
+	// 	ID:   1,
+	// - 	Name: "lutfi",
+	// + 	Name: "Lutfi",
+	// }
+
+
+	fmt.Println("======== compare string ==========")
+	sa, sb := "abc", "abc\n"
+	fmt.Println("abc", sa != sb, sa, sb)
+
+	if eq := reflect.DeepEqual(sa, sb); !eq {
+		fmt.Println("abc", eq, sa, sb)
+	}
+
+	if diff := cmp.Diff(sa, sb); diff != "" {
+		fmt.Println("diff", diff)
+	}
+
+	// ======== compare string ==========
+	// "abc" vs "abc\n"
+	// output : abc abc
+	//
+	// diff   string(
+	// - 	"abc",
+	// + 	"abc\n",
+	// )
+
+
+	fmt.Println("======== compare array ==========")
+	var nilNames []string
+	names := []string{}
+
+	fmt.Println("what we see", nilNames, names)
+
+	if eq := reflect.DeepEqual(nilNames, names); !eq {
+		fmt.Println(eq, nilNames, names)
+	}
+
+	if diff := cmp.Diff(nilNames, names); diff != "" {
+		fmt.Println("diff", diff)
+	}
+
+	// ======== compare array ==========
+	// var names []string vs names := []string{}
+	// DeepEqual Report : [] vs []
+	// cmp.Diff
+	// diff   []string(
+	// - 	nil,
+	// + 	{},
+	// )
+
+}
