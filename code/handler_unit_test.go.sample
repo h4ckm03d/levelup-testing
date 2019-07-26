@@ -1,0 +1,47 @@
+func TestHttpRequest(t *testing.T) {
+	// skip the complex code lol 
+	tests := []struct {
+		name       string
+		httpMethod string
+		targetURL  string
+		token      string
+		payload    []byte
+		wantCode   int
+	}{
+		// TODO: Add test cases.
+		{
+			name:       "get task",
+			httpMethod: "GET",
+			targetURL:  fmt.Sprintf("/tasks/%d", fakeTask.ID),
+			token:      jwtUserToken,
+			wantCode:   200,
+		},
+		// ...
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			recorder := httptest.NewRecorder()
+			req := newHTTPRequest(tt.httpMethod, tt.targetURL, tt.token, tt.payload)
+			//fake metainfo to satisfy checker
+			meta := request.MetaInfo{User: authorization.JWTResourceOwner{ID: fakeTask.UserID}}
+			ctx := context.WithValue(req.Context(), request.ContextKeyMeta, meta)
+			req = req.WithContext(ctx)
+			handler.ServeHTTP(recorder, req)
+			if recorder.Code >= 400 {
+				t.Log(recorder)
+			}
+			assert.Equal(t, tt.wantCode, recorder.Code)
+		})
+	}
+	mockSvc.AssertExpectations(t)
+}
+
+//newHTTPRequest create new http request for test
+func newHTTPRequest(method, path, token string, body []byte) *http.Request {
+    request := httptest.NewRequest(method,  
+            "http://localhost"+path, bytes.NewBuffer(body))
+    request.Header.Set("Authorization", token)
+    request.Header.Set("Content-Type", "application/json")
+    return request
+}
+

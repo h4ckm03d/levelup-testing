@@ -1,0 +1,66 @@
+// RetrieveTask handle Get a Task
+//
+//> USER AUTHENTICATION, SCOPE: USER
+func (h *TodoHandler) RetrieveTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) error {
+	id, err := strconv.ParseInt(ps.ByName("id"), 10, 64)
+	if err != nil {
+		response.Error(w, err)
+		return err
+	}
+	ctx := r.Context()
+
+    active := false
+
+    err = h.CachePvd.Fetch(CacheKey("toggle", "abc"), &active, func() (interface{}, error) {
+		return tu.PalancaPvd.IsFeatureActive(ctx, "abc", "")
+	}, time.Minute*10)
+
+	if err != nil {
+		return errors.Wrap(err, "failed check toggle feature")
+	}
+
+    if !active {
+		return abc.ErrToggleInactive
+	}
+
+	query := `SELECT id, user_id, description, done, updated_at, created_at
+  						FROM tasks WHERE ID = %d`
+	queryCategory := `SELECT categories.* FROM categories JOIN category_task ON category_task.category_id=categories.id WHERE task_id = %d`
+
+	list, err := t.fetch(ctx, buildQuery(query, id))
+	if err == sql.ErrNoRows || len(list) == 0 {
+		return nil, response.ErrNotFound
+	}
+	if err != nil {
+		return nil, err
+	}
+	task := list[0]
+
+	rows, err := t.db.QueryContext(ctx, buildQuery(queryCategory, id))
+	if err != nil {
+		return nil, err
+	}
+
+	categories := make([]abc.Category, 0)
+	for rows.Next() {
+		cat := abc.Category{}
+		err = rows.Scan(
+			&cat.ID,
+			&cat.Title,
+			&cat.UpdatedAt,
+			&cat.CreatedAt,
+		)
+
+		if err != nil {
+			return nil, err
+		}
+		categories = append(categories, cat)
+	}
+    
+    if len(categories) > 0 {
+		task.Categories = categories
+	}
+    
+	response.OK(w, task, "")
+	return nil
+}

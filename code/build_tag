@@ -1,0 +1,49 @@
+// +build unit
+package mypkg // wrong
+
+
+
+
+
+
+
+// +build integration
+
+package mypkg
+
+
+
+
+
+
+
+// +build external
+
+package mypkg
+
+
+
+
+
+
+
+// +build integration,external
+
+package mypkg
+
+
+
+
+
+
+
+// +build !integration,external
+
+package mypkg
+
+
+
+
+
+
+

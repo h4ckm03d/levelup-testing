@@ -1,4 +1,4 @@
-export { draculaFull as theme } from 'code-surfer'
+export { shadesOfPurpleFull as theme } from 'code-surfer'
 
 import { slides as introduction } from './introduction.mdx'
 import { slides as mistakes } from './common-mistakes.mdx'
