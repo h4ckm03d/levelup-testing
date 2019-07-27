@@ -2,7 +2,50 @@ import { Appear } from 'mdx-deck'
 
 
 # Study case
+---
 
+
+import {
+  CodeSurferLayout,
+  CodeSurferColumnLayout,
+  Code,
+  Step,
+} from "code-surfer";
+
+<CodeSurferLayout>
+  <Code
+    lang="go"
+    focus="1:66"
+    code={require("!!raw-loader!./code/badhandler.go.sample").default}
+    title="Bad handler"
+    subtitle="get task"
+  />
+  <Code
+    focus="5:9"
+    code={require("!!raw-loader!./code/badhandler.go.sample").default}
+    subtitle="parse id from /task/{id}"
+  />
+  <Code
+    focus="13:21"
+    code={require("!!raw-loader!./code/badhandler.go.sample").default}
+    subtitle="get feature active or not"
+  />
+  <Code
+    focus="23:35"
+    code={require("!!raw-loader!./code/badhandler.go.sample").default}
+    subtitle="fetch task"
+  />
+  <Code
+    focus="37:60"
+    code={require("!!raw-loader!./code/badhandler.go.sample").default}
+    subtitle="fetch categories"
+  />
+  <Code
+    focus="62"
+    code={require("!!raw-loader!./code/badhandler.go.sample").default}
+    subtitle="write json"
+  />
+</CodeSurferLayout>
 
 ---
 
@@ -15,7 +58,86 @@ import { Appear } from 'mdx-deck'
     </li>
     <li>Possibility redundancy code</li>
     <li>Difficult to manage branching of logic flow</li>
-    <li>Difficult to mocking function</li>
+    <li>Difficult to mocking a function</li>
     <li>Cannot maintain code clarity</li>
   </Appear>
 </ul>
+
+---
+
+# Solution?
+
+<ul>
+  <Appear>
+    <li>
+      Clean code
+    </li>
+    <li>Make a slim handler</li>
+    <li>Put logic to usecase/service layer</li>
+    <li>Move database query to repository layer</li>
+  </Appear>
+</ul>
+
+---
+
+# What we got after refactor?
+
+---
+
+<CodeSurferLayout>
+  <Code
+    lang="go"
+    focus="1:16"
+    code={require("!!raw-loader!./code/solution_design").default}
+    title="Thin handler"
+    subtitle="get task"
+  />
+  <Code
+    focus="9"
+    code={require("!!raw-loader!./code/solution_design").default}
+    title="Thin handler"
+    subtitle="just call func from service layer"
+  />
+  <Code
+    focus="31:35"
+    code={require("!!raw-loader!./code/solution_design").default}
+    subtitle="declare interface for usecase"
+  />
+  <Code
+    focus="37:49"
+    code={require("!!raw-loader!./code/solution_design").default}
+    subtitle="create implementation of usecase interface"
+  />
+  <Code
+    focus="65:69"
+    code={require("!!raw-loader!./code/solution_design").default}
+    subtitle="declare interface for repository"
+  />
+  <Code
+    focus="71:86"
+    code={require("!!raw-loader!./code/solution_design").default}
+    subtitle="create implementation of repository interface"
+  />
+</CodeSurferLayout>
+
+---
+
+#### Directory Structure
+```
+├── handler
+│   └── handler.go
+├── delivery
+│   ├── todo_http.go
+│   └── todo_http_test.go
+├── repository
+│   ├── mysql_category.go
+│   ├── mysql_category_test.go
+│   ├── mysql_task.go
+│   ├── mysql_task_test.go
+│   ├── repository_test.go
+│   └── util.go
+├── service.go
+├── service_test.go
+└── usecase
+    ├── todo.go
+    └── todo_test.go

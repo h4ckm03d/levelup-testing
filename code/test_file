@@ -17,13 +17,26 @@ func TestGenerateSomeFile(t *testing.T) {
 
 
 
+ var IOWriteString = io.WriteString
 
+
+
+
+
+
+
+
+
+
+
+
+ 
 func TestSyncer_Sync_Fail_Write(t *testing.T) {
 	syncer := &envsync.Syncer{}
 	envsync.IOWriteString = func(w io.Writer, s string) (n int, err error) {
 		return len(s), errors.New("fail write")
 	}
-    
+
 	defer func() { envsync.IOWriteString = io.WriteString }()
 
 	result := "testdata/env.result.error.corrupt"

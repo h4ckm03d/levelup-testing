@@ -1,0 +1,87 @@
+
+func (h *TodoHandler) RetrieveTask(w http.ResponseWriter, r *http.Request, ps httprouter.Params) error {
+    id, err := strconv.ParseInt(ps.ByName("id"), 10, 64)
+    if err != nil {
+        response.Error(w, err)
+        return err
+    }
+    ctx := r.Context()
+    td, err := h.usecase.GetTask(ctx, id)
+    if err != nil {
+        response.Error(w, err)
+        return err
+    }
+    response.OK(w, td, "")
+    return nil
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//service.go
+type Usecase interface {
+    GetTask(ctx context.Context, id int64) (*Task, error)
+    …
+}
+
+//usecase/usecase.go
+func (tu *todoUsecase) GetTask(ctx context.Context, id int64) (task *abc.Task, err error) {
+    err = cancelation.CheckDeadline(ctx)
+    if err != nil {
+        return task, err
+    }
+
+    if err := tu.checkToggle(ctx); err != nil {
+        return task, err
+    }
+
+    return tu.TaskRepo.GetTask(ctx, id)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+//service.go
+type TaskRepo interface {
+    GetTask(ctx context.Context, id int64) (*Task, error)
+    ...
+}
+
+//repository/repository.go
+func (t *mysqlTask) GetTask(ctx context.Context, id int64) (*abc.Task, error) {
+    err := cancelation.CheckDeadline(ctx)
+    if err != nil {
+        return nil, err
+    }
+    query := `SELECT id, user_id, description, done, updated_at, created_at FROM tasks WHERE ID = %d`
+    list, err := t.fetch(ctx, buildQuery(query, id))
+    if err == sql.ErrNoRows || len(list) == 0 {
+        return nil, response.ErrNotFound
+    }
+    if err != nil {
+        return nil, err
+    }
+    return list[0], nil
+}
+
